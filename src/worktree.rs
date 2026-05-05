@@ -17,7 +17,10 @@ fn walk(repo_root: &Path, dir: &Path, out: &mut Vec<PathBuf>) -> io::Result<()> 
         if name == ".ics" {
             continue;
         }
-        let meta = entry.metadata()?;
+        let meta = fs::symlink_metadata(&path)?;
+        if meta.file_type().is_symlink() {
+            continue;
+        }
         if meta.is_dir() {
             walk(repo_root, &path, out)?;
         } else if meta.is_file()

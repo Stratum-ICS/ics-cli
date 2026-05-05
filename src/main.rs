@@ -2,12 +2,12 @@ use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
 use ics_cli::commit::{self, CommitOptions};
 use ics_cli::error::IcsError;
+use ics_cli::path_safety;
 use ics_cli::paths;
 use ics_cli::repo;
 use ics_cli::store::Store;
-use ics_cli::worktree;
 use similar::TextDiff;
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -43,6 +43,9 @@ enum Cmd {
     },
     /// Overwrite working-tree files from the HEAD tree (destructive).
     Checkout {
+        /// Restore every path in the HEAD snapshot (overwrites local files).
+        #[arg(long)]
+        all: bool,
         #[arg(value_name = "PATH")]
         paths: Vec<PathBuf>,
     },
@@ -55,26 +58,14 @@ fn default_author() -> String {
 }
 
 fn repo_root() -> Result<PathBuf> {
-    repo::find_repo_from_env().ok_or_else(|| anyhow::anyhow!("not an ics repository"))
-}
-
-fn key_from_arg(repo_root: &Path, arg: &Path) -> Result<String> {
-    let p = if arg.is_absolute() {
-        arg.strip_prefix(repo_root)
-            .with_context(|| format!("{} is outside the repository", arg.display()))?
-    } else {
-        arg
-    };
-    Ok(worktree::posix_display(p))
+    repo::find_repo_from_env()
+        .ok_or(IcsError::NotRepository)
+        .map_err(|e| e.into())
 }
 
 fn cmd_status(repo_root: &Path) -> Result<()> {
     let store = Store::open(&paths::ics_dir(repo_root))?;
-    let head_tree: BTreeMap<String, String> = match commit::tree_at_head(&store) {
-        Ok(t) => t,
-        Err(IcsError::NoCommits) => BTreeMap::new(),
-        Err(e) => return Err(e.into()),
-    };
+    let head_tree = commit::head_tree_or_empty(&store)?;
     let current = commit::working_tree_manifest(repo_root)?;
 
     let head_keys: BTreeSet<_> = head_tree.keys().cloned().collect();
@@ -101,7 +92,7 @@ fn cmd_status(repo_root: &Path) -> Result<()> {
 
 fn cmd_diff(repo_root: &Path, path_args: &[PathBuf]) -> Result<()> {
     let store = Store::open(&paths::ics_dir(repo_root))?;
-    let head_tree = commit::tree_at_head(&store)?;
+    let head_tree = commit::head_tree_or_empty(&store)?;
     let current = commit::working_tree_manifest(repo_root)?;
 
     let filter: Option<BTreeSet<String>> = if path_args.is_empty() {
@@ -109,7 +100,7 @@ fn cmd_diff(repo_root: &Path, path_args: &[PathBuf]) -> Result<()> {
     } else {
         let mut s = BTreeSet::new();
         for p in path_args {
-            s.insert(key_from_arg(repo_root, p)?);
+            s.insert(path_safety::user_path_to_tree_key(repo_root, p)?);
         }
         Some(s)
     };
@@ -138,7 +129,7 @@ fn cmd_diff(repo_root: &Path, path_args: &[PathBuf]) -> Result<()> {
         };
         let new_text = match new_h {
             Some(_) => {
-                let bytes = fs::read(repo_root.join(&k))?;
+                let bytes = fs::read(repo_root.join(Path::new(k.as_str())))?;
                 String::from_utf8_lossy(&bytes).into_owned()
             }
             None => String::new(),
@@ -177,21 +168,26 @@ fn cmd_log(repo_root: &Path) -> Result<()> {
     Ok(())
 }
 
-fn cmd_checkout(repo_root: &Path, path_args: &[PathBuf]) -> Result<()> {
+fn cmd_checkout(repo_root: &Path, all: bool, path_args: &[PathBuf]) -> Result<()> {
+    if !all && path_args.is_empty() {
+        anyhow::bail!(
+            "checkout: specify PATH arguments or pass --all to restore the entire HEAD tree (destructive)"
+        );
+    }
     let store = Store::open(&paths::ics_dir(repo_root))?;
     let head_tree = commit::tree_at_head(&store)?;
-    let keys: Vec<String> = if path_args.is_empty() {
+    let keys: Vec<String> = if all {
         head_tree.keys().cloned().collect()
     } else {
         let mut v = Vec::new();
         for p in path_args {
-            v.push(key_from_arg(repo_root, p)?);
+            v.push(path_safety::user_path_to_tree_key(repo_root, p)?);
         }
         v
     };
     for k in keys {
         let bytes = commit::read_blob_for_path(&store, &head_tree, &k)?;
-        let dest = repo_root.join(&k);
+        let dest = repo_root.join(Path::new(k.as_str()));
         if let Some(parent) = dest.parent() {
             fs::create_dir_all(parent)?;
         }
@@ -241,9 +237,9 @@ fn main() -> Result<()> {
             let root = repo_root()?;
             cmd_diff(&root, &paths)?;
         }
-        Cmd::Checkout { paths } => {
+        Cmd::Checkout { all, paths } => {
             let root = repo_root()?;
-            cmd_checkout(&root, &paths)?;
+            cmd_checkout(&root, all, &paths)?;
         }
     }
     Ok(())

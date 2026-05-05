@@ -7,3 +7,4 @@ pub mod repo;
 pub mod worktree;
 pub mod commit;
 pub mod error;
+pub mod path_safety;

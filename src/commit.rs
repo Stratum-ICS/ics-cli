@@ -1,5 +1,6 @@
 use crate::error::{IcsError, Result};
 use crate::objects;
+use crate::path_safety;
 use crate::store::Store;
 use crate::worktree;
 use serde_json::Value;
@@ -28,6 +29,7 @@ pub fn working_tree_manifest(repo_root: &Path) -> Result<BTreeMap<String, String
     let mut tree_map = BTreeMap::new();
     for rel in rel_paths {
         let key = worktree::posix_display(&rel);
+        path_safety::assert_safe_tree_key(&key)?;
         let data = fs::read(repo_root.join(&rel))?;
         tree_map.insert(key, hex::encode(objects::blob_hash(&data)));
     }
@@ -40,7 +42,20 @@ pub fn tree_at_head(store: &Store) -> Result<BTreeMap<String, String>> {
         .get_commit_row(&head)?
         .ok_or_else(|| IcsError::Msg("HEAD points to missing commit".into()))?;
     let tid = decode_hex32(&row.tree_id)?;
-    objects::read_tree(store.ics_dir.as_path(), &tid)
+    let tree = objects::read_tree(store.ics_dir.as_path(), &tid)?;
+    for k in tree.keys() {
+        path_safety::assert_safe_tree_key(k)?;
+    }
+    Ok(tree)
+}
+
+/// HEAD snapshot tree, or empty map when there are no commits yet.
+pub fn head_tree_or_empty(store: &Store) -> Result<BTreeMap<String, String>> {
+    match tree_at_head(store) {
+        Ok(t) => Ok(t),
+        Err(IcsError::NoCommits) => Ok(BTreeMap::new()),
+        Err(e) => Err(e),
+    }
 }
 
 pub fn make_commit(store: &Store, repo_root: &Path, opts: CommitOptions<'_>) -> Result<String> {
@@ -52,6 +67,9 @@ pub fn make_commit(store: &Store, repo_root: &Path, opts: CommitOptions<'_>) -> 
             .ok_or_else(|| IcsError::Msg("HEAD points to missing commit".into()))?;
         let tid = decode_hex32(&row.tree_id)?;
         let head_tree = objects::read_tree(store.ics_dir.as_path(), &tid)?;
+        for k in head_tree.keys() {
+            path_safety::assert_safe_tree_key(k)?;
+        }
         if head_tree == tree_map {
             return Err(IcsError::NothingToCommit);
         }
@@ -114,6 +132,7 @@ pub fn read_blob_for_path(
     head_tree: &BTreeMap<String, String>,
     rel_key: &str,
 ) -> Result<Vec<u8>> {
+    path_safety::assert_safe_tree_key(rel_key)?;
     let blob_hex = head_tree
         .get(rel_key)
         .ok_or_else(|| IcsError::Msg(format!("path not in HEAD: {rel_key}")))?;
