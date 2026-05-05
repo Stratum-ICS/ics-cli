@@ -6,6 +6,7 @@ Local-markdown workspace + Stratum **ICS** (Incremental Consensus System) integr
 
 | Document | Description |
 |----------|-------------|
+| [**Usage wiki**](docs/wiki/README.md) | Commands, config, Stratum flows, storage, troubleshooting |
 | [Design spec](docs/superpowers/specs/2026-05-06-ics-cli-design.md) | Phased plan (B0–B2–C), hybrid `.ics/` layout, Stratum API mapping, identity bridge |
 | [B0 plan](docs/superpowers/plans/2026-05-05-ics-cli-b0.md) | Local store + `ics init/commit/log/diff/status` |
 | [B1 plan](docs/superpowers/plans/2026-05-05-ics-cli-b1.md) | Stratum auth, notes, proposals |
@@ -19,4 +20,4 @@ Local-markdown workspace + Stratum **ICS** (Incremental Consensus System) integr
 
 ## Status
 
-Specification, hybrid storage layout, and **per-milestone implementation plans** are in `docs/` — application code not landed yet.
+Rust **`ics`** binary ships from this repo (`cargo build`, `cargo test`). HTTP paths are pinned via `tests/fixtures/stratum-openapi.json` — refresh when your Stratum OpenAPI changes.
