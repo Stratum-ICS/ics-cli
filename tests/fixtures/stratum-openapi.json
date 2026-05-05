@@ -1,0 +1,37 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Stratum API subset (fixture for ics-cli route pinning)",
+    "version": "0.0.0"
+  },
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "summary": "login"
+      }
+    },
+    "/api/notes": {
+      "post": {
+        "summary": "create note"
+      }
+    },
+    "/api/notes/{note_id}": {
+      "get": {
+        "summary": "get note"
+      },
+      "put": {
+        "summary": "update note"
+      }
+    },
+    "/api/proposals": {
+      "post": {
+        "summary": "create proposal"
+      }
+    },
+    "/api/vaults/{slug}/pull": {
+      "post": {
+        "summary": "vault pull preview or apply"
+      }
+    }
+  }
+}

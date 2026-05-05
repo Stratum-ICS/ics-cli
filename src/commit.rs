@@ -127,6 +127,11 @@ fn unix_now() -> i64 {
         .unwrap_or(0)
 }
 
+/// True when tracked markdown hashes match `HEAD` (or both empty when no commits).
+pub fn worktree_matches_head(repo_root: &Path, store: &Store) -> Result<bool> {
+    Ok(head_tree_or_empty(store)? == working_tree_manifest(repo_root)?)
+}
+
 pub fn read_blob_for_path(
     store: &Store,
     head_tree: &BTreeMap<String, String>,
