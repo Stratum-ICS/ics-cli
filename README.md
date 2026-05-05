@@ -6,7 +6,11 @@ Local-markdown workspace + Stratum **ICS** (Incremental Consensus System) integr
 
 | Document | Description |
 |----------|-------------|
-| [Design spec](docs/superpowers/specs/2026-05-06-ics-cli-design.md) | Phased plan (B0–B2–C), local git-like workflow, Stratum API mapping, identity bridge |
+| [Design spec](docs/superpowers/specs/2026-05-06-ics-cli-design.md) | Phased plan (B0–B2–C), hybrid `.ics/` layout, Stratum API mapping, identity bridge |
+| [B0 plan](docs/superpowers/plans/2026-05-05-ics-cli-b0.md) | Local store + `ics init/commit/log/diff/status` |
+| [B1 plan](docs/superpowers/plans/2026-05-05-ics-cli-b1.md) | Stratum auth, notes, proposals |
+| [B2 plan](docs/superpowers/plans/2026-05-05-ics-cli-b2.md) | Pull server state, conflict flags |
+| [C plan](docs/superpowers/plans/2026-05-05-ics-cli-c.md) | Vault `pull` preview/confirm |
 
 ## Stratum references
 
@@ -15,4 +19,4 @@ Local-markdown workspace + Stratum **ICS** (Incremental Consensus System) integr
 
 ## Status
 
-Specification and repository scaffold only — implementation follows the design spec milestones.
+Specification, hybrid storage layout, and **per-milestone implementation plans** are in `docs/` — application code not landed yet.

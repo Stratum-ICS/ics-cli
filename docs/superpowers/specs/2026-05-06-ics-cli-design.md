@@ -36,8 +36,21 @@ This repo holds the CLI code and docs; it does not duplicate Stratum’s wiki �
 ### 3.1 Local-first (milestone B)
 
 - Working tree: user-edited `.md` files under a configured root.
-- Local **snapshots** (commits): content-addressed or hashed checkpoints + metadata in a small local store (e.g. SQLite or simple DAG), **no Stratum required**.
+- Local **snapshots** (commits): **hybrid storage** (decision **2026-05-05**):
+  - **Content-addressed blob files** on disk for immutable bytes (per-file blobs and serialized **tree** snapshots), under `.ics/objects/…` (Git-like layout: hash prefix paths).
+  - **SQLite** (e.g. `.ics/store.db`) for the **commit DAG**, **refs** (`HEAD`, branch tips), and query-friendly metadata.
+  - B0–B2 **local** history does not require Stratum.
 - **Online bridge:** auth → create/update/publish notes → build **proposal** payloads referencing **server note IDs**.
+
+#### 3.1.1 `.ics/` directory layout (normative for B0)
+
+| Path | Role |
+|------|------|
+| `.ics/store.db` | SQLite: commits table, refs table (and optional meta/version pragma). |
+| `.ics/objects/blobs/{ab}/{rest}` | Raw bytes for each **blob** object (typically one tracked file version); `ab` = first two hex chars of SHA-256 of raw bytes. |
+| `.ics/objects/trees/{ab}/{rest}` | UTF-8 JSON tree manifest for each **tree** object; `rest` from SHA-256 of canonical JSON (sorted keys, stable separators). |
+
+Refs `HEAD` and branch names (e.g. `refs/heads/main`) map symbolic names to **commit** hashes stored in SQLite; each commit row references a **tree** object id for the snapshot.
 
 ### 3.2 Identity bridge (required for B1+)
 
@@ -98,10 +111,17 @@ When Stratum’s vault APIs and semantics are stable enough for this tool:
 - **Placeholders:** None; milestone table is explicit.
 - **Consistency:** B then C; C uses real vault routes, not blueprint-only names.
 - **Scope:** Single CLI repo + Stratum as backend; federation excluded.
-- **Ambiguity:** Conflict resolution policy for **B2** is left to implementation plan (explicit subcommands or flags).
+- **Ambiguity:** B0 local store is fixed (**hybrid**: blobs on disk + SQLite for graph/refs). Conflict resolution policy for **B2** remains in the B2 implementation plan (explicit subcommands or flags).
 
 ---
 
-## 9. Next step
+## 9. Implementation plans
 
-After this spec is committed in `ics-cli`, produce an implementation plan (task breakdown: B0 commands, storage format, auth client, note sync, proposal CLI, then C commands) and link it from this repo’s `docs/superpowers/plans/`.
+Per-milestone plans (executable task lists):
+
+| Milestone | Document |
+|-----------|----------|
+| **B0** — local store + `ics init/commit/log/diff/status` | [`2026-05-05-ics-cli-b0.md`](../plans/2026-05-05-ics-cli-b0.md) |
+| **B1** — Stratum auth, notes, proposals | [`2026-05-05-ics-cli-b1.md`](../plans/2026-05-05-ics-cli-b1.md) |
+| **B2** — pull server state, conflicts | [`2026-05-05-ics-cli-b2.md`](../plans/2026-05-05-ics-cli-b2.md) |
+| **C** — vault pull / fork / clone alignment | [`2026-05-05-ics-cli-c.md`](../plans/2026-05-05-ics-cli-c.md) |
