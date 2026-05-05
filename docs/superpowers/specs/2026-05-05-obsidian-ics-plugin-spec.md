@@ -62,6 +62,8 @@ Follow the parent spec: **YAML frontmatter** (`stratum_note_id`, etc.) and/or **
 
 ## 5. UX surface (minimal)
 
+Concrete walkthroughs (first launch, ribbon, panel, modals, P2 flows): **[Obsidian ICS plugin design §11](2026-05-05-obsidian-ics-plugin-design.md#11-user-experience-walkthrough)**.
+
 - **Ribbon** icon + **Command palette** entries for: Status, Commit (prompt for message), Log, Diff (current file or vault per CLI).
 - **B1+:** Login, Publish, Proposal create/submit (forms: team, rationale ≥ 50 chars per Stratum rules).
 - **B2+:** Pull / refresh; conflict indicators per CLI policy.
