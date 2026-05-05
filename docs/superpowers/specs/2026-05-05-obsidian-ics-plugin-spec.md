@@ -1,7 +1,7 @@
 # Obsidian ICS plugin — feature spec
 
 **Date:** 2026-05-05  
-**Status:** Draft (separate deliverable from core `ics` CLI)  
+**Status:** Draft feature brief — **normative architecture:** [Obsidian ICS plugin design](2026-05-05-obsidian-ics-plugin-design.md)  
 **Parent context:** [ics-cli design spec](2026-05-06-ics-cli-design.md) — vault as markdown workspace, `.ics/` local store, Stratum for ICS and (later) vault HTTP.
 
 ---
