@@ -1,6 +1,6 @@
 # ics-cli
 
-Local-markdown workspace + Stratum **ICS** (Incremental Consensus System) integration. This repository is the home for the **Deposition-style CLI**; the running server and canonical ICS behavior live in **[Stratum](https://github.com/Stratum-ICS/Stratum)**.
+Local-markdown workspace + Stratum **ICS** (Incremental Consensus System) integration. This repository is the home for the **`ics` CLI** (installable package may remain `ics-cli`); the running server and canonical ICS behavior live in **[Stratum](https://github.com/Stratum-ICS/Stratum)**.
 
 ## Docs
 

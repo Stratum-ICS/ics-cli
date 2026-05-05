@@ -23,11 +23,11 @@ This repo holds the CLI code and docs; it does not duplicate Stratum’s wiki �
 | Confidence / decay | `wiki/confidence-decay.md` |
 | Semantic conflicts | `wiki/semantic-conflicts.md` |
 | Vault layout on disk | `wiki/vault-layout.md` |
-| Survey: what exists vs blueprint “Deposition” | `docs/superpowers/specs/2026-05-05-ics-cli-tool-repository-documentation.md` |
+| Survey: shipped APIs vs older blueprint docs | `docs/superpowers/specs/2026-05-05-ics-cli-tool-repository-documentation.md` |
 | Vault HTTP implementation | `backend/src/stratum/api/vaults.py` |
 | Desktop sidecar (not ICS-specific) | `backend/stratum_entry.py` |
 
-**Blueprint vs shipped:** Older backup docs describe `POST /api/vaults/{slug}/sync/diff` and a PyPI package named `deposition`. Stratum today exposes **`POST /api/vaults/{slug}/pull`** with `confirm: false` (preview diff) / `confirm: true` (apply). Milestone **C** must track **actual** routes, not the old names.
+**Blueprint vs shipped:** Older backup docs describe `POST /api/vaults/{slug}/sync/diff` and legacy third-party CLI packaging. Stratum today exposes **`POST /api/vaults/{slug}/pull`** with `confirm: false` (preview diff) / `confirm: true` (apply). Milestone **C** must track **actual** routes, not the old names. This repo’s CLI entrypoint is **`ics`** (Python package may ship as `ics-cli` on PyPI).
 
 ---
 
@@ -72,6 +72,7 @@ When Stratum’s vault APIs and semantics are stable enough for this tool:
 
 ## 5. Suggested tech (non-binding)
 
+- User-facing command name: **`ics`** (Python distribution package name may stay **`ics-cli`** on PyPI to avoid PyPI namespace collisions).
 - Python 3.10+, **Typer** + **httpx**, optional **pydantic** for response shapes.
 - Config: `STRATUM_BASE_URL`, token storage via keyring or `~/.config/ics-cli/` with `0600` permissions.
 
