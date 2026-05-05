@@ -12,6 +12,7 @@ Local-markdown workspace + Stratum **ICS** (Incremental Consensus System) integr
 | [B1 plan](docs/superpowers/plans/2026-05-05-ics-cli-b1.md) | Stratum auth, notes, proposals |
 | [B2 plan](docs/superpowers/plans/2026-05-05-ics-cli-b2.md) | Pull server state, conflict flags |
 | [C plan](docs/superpowers/plans/2026-05-05-ics-cli-c.md) | Vault `pull` preview/confirm |
+| [Obsidian ICS plugin spec](docs/superpowers/specs/2026-05-05-obsidian-ics-plugin-spec.md) | Separate Obsidian UI; CLI process bridge; phases P0–P4 vs CLI B0–C |
 
 ## Stratum references
 
