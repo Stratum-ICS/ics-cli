@@ -74,7 +74,7 @@ When Stratum’s vault APIs and semantics are stable enough for this tool:
 
 | Phase | Feels like | Stratum / network | What the CLI does |
 |-------|------------|-------------------|-------------------|
-| **B0** | Pure local git for markdown | **None** | `init`, `commit`, `log`, `diff`, `status`, optional `revert` on the local tree only. |
+| **B0** | Pure local git for markdown | **None** | `init`, `commit`, `log`, `diff`, `status`, optional **`checkout`** (restore file paths from `HEAD`; git-like, not `git revert`). |
 | **B1** | B0 + “remote is Stratum” | Auth + notes APIs + publish + proposals | Login; create/update note bodies from files; **publish** team-scoped notes per wiki; map IDs in frontmatter/index; `proposal create` / `proposal submit` using `POST /api/proposals` (rationale ≥ 50 chars, etc.). |
 | **B2** | B1 + pull server truth into tree | B1 + list/read note content APIs | Refresh local files from server; resolve conflicts policy (last-write-wins vs manual — **spec per command**); keep mapping consistent. |
 | **C** | B2 + vault-shaped sync | Mature `/api/vaults/...` usage | Fork/clone/tree; **`POST /api/vaults/{slug}/pull`** preview/confirm; align paths with Stratum vault roots; reduce custom sync where vault pull + proposals already cover merges. |
@@ -93,7 +93,7 @@ When Stratum’s vault APIs and semantics are stable enough for this tool:
 - **YAML frontmatter (B1+):** **serde_yaml**.
 - **Crypto:** **sha2** + **hex** (object hashes).
 - **Errors:** **anyhow** at CLI boundary; **thiserror** for library error types.
-- **Config:** `STRATUM_BASE_URL`; token file under `~/.config/ics-cli/` with mode **0600** (use `std::fs::OpenOptions` + `libc`/`nix` chmod or write then `std::fs::set_permissions` where supported).
+- **Config:** `STRATUM_BASE_URL`; secrets file **`~/.config/ics-cli/credentials.json`** (normative name) with mode **0600** — write **atomically** (temp file in same dir + `rename`), avoid logging tokens to stderr in traces.
 
 **Distribution:** **crates.io** as **`ics-cli`** (package) installing binary **`ics`**; optional release artifacts via **GitHub Releases** (static musl builds later).
 
