@@ -10,7 +10,7 @@
 
 Deliver an **Obsidian Community Plugin** that turns a vault into the **editing UI** for the same workflows the **`ics`** CLI implements: local snapshots (B0+), Stratum-backed notes and proposals (B1+), pull and conflict surfacing (B2+), optional vault pull alignment (C). The plugin **does not** replace the CLI’s storage or API client logic; it **invokes and presents** `ics` (and may add thin UI-only helpers).
 
-**Repository placement (TBD):** default assumption is a **sibling repo** (e.g. `obsidian-ics` or `ics-obsidian`) published separately from `ics-cli`, with this spec living in `ics-cli` until that repo exists or the team moves the canonical spec.
+**Repository placement (decided 2026-05-05):** canonical plugin source lives in a **sibling** git repository (name TBD at repo creation; e.g. `ics-obsidian` / `obsidian-ics`). This repo keeps discovery links and a copy of the spec until the sibling repo is the single source of truth for plugin docs.
 
 ---
 
@@ -84,7 +84,7 @@ Same as parent spec: [teams & proposals](https://github.com/Stratum-ICS/Stratum/
 
 ## 8. Open questions
 
-- Canonical **plugin repo name** and whether this file moves there with a stub link from `ics-cli`.
+- **Plugin repo name** at creation time; whether this spec file is **moved** to the sibling repo with a stub + link left in `ics-cli`.
 - Whether **P1** hooks require new CLI flags (`--porcelain`, JSON lines) for stable parsing.
 - **Community Plugins** listing criteria (license, README, minimal docs) before first publish.
 
