@@ -1,0 +1,25 @@
+[package]
+name = "ics-cli"
+version = "0.1.0"
+edition = "2021"
+description = "Local markdown workspace with git-like history + Stratum ICS"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+hex = "0.4"
+rusqlite = { version = "0.31", features = ["bundled"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+similar = "2"
+thiserror = "1"
+
+[dev-dependencies]
+assert_cmd = "2"
+tempfile = "3"
+
+[[bin]]
+name = "ics"
+path = "src/main.rs"
