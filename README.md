@@ -14,6 +14,7 @@ Local-markdown workspace + Stratum **ICS** (Incremental Consensus System) integr
 | [C plan](docs/superpowers/plans/2026-05-05-ics-cli-c.md) | Vault `pull` preview/confirm |
 | [Obsidian ICS plugin spec](docs/superpowers/specs/2026-05-05-obsidian-ics-plugin-spec.md) | Feature brief: phases P0–P4, non-goals, UX |
 | [Obsidian ICS plugin design](docs/superpowers/specs/2026-05-05-obsidian-ics-plugin-design.md) | Approved architecture + **§11 user walkthrough** (ribbon, panel, modals, flows) |
+| [Obsidian ICS plugin P0 plan](docs/superpowers/plans/2026-05-05-obsidian-ics-plugin-p0.md) | Sibling-repo implementation: esbuild, runner, `ItemView`, palette commands |
 
 ## Stratum references
 
