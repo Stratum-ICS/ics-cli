@@ -27,7 +27,7 @@ This repo holds the CLI code and docs; it does not duplicate Stratum’s wiki �
 | Vault HTTP implementation | `backend/src/stratum/api/vaults.py` |
 | Desktop sidecar (not ICS-specific) | `backend/stratum_entry.py` |
 
-**Blueprint vs shipped:** Older backup docs describe `POST /api/vaults/{slug}/sync/diff` and legacy third-party CLI packaging. Stratum today exposes **`POST /api/vaults/{slug}/pull`** with `confirm: false` (preview diff) / `confirm: true` (apply). Milestone **C** must track **actual** routes, not the old names. This repo’s CLI entrypoint is **`ics`** (Python package may ship as `ics-cli` on PyPI).
+**Blueprint vs shipped:** Older backup docs describe `POST /api/vaults/{slug}/sync/diff` and legacy third-party CLI packaging. Stratum today exposes **`POST /api/vaults/{slug}/pull`** with `confirm: false` (preview diff) / `confirm: true` (apply). Milestone **C** must track **actual** routes, not the old names. This repo builds the **`ics`** binary from **Rust** (Cargo crate name **`ics-cli`**; publish to **crates.io** under that name unless renamed).
 
 ---
 
@@ -83,11 +83,19 @@ When Stratum’s vault APIs and semantics are stable enough for this tool:
 
 ---
 
-## 5. Suggested tech (non-binding)
+## 5. Implementation language & suggested libraries (non-binding)
 
-- User-facing command name: **`ics`** (Python distribution package name may stay **`ics-cli`** on PyPI to avoid PyPI namespace collisions).
-- Python 3.10+, **Typer** + **httpx**, optional **pydantic** for response shapes.
-- Config: `STRATUM_BASE_URL`, token storage via keyring or `~/.config/ics-cli/` with `0600` permissions.
+- **Language:** **Rust** (edition **2021**). Primary artifact: **`ics`** binary (see `[[bin]]` in workspace `Cargo.toml`).
+- **CLI:** **clap** (derive).
+- **SQLite:** **rusqlite** (optionally `bundled` feature for portable builds).
+- **HTTP (B1+):** **reqwest** with **tokio** async runtime (or blocking client only if you deliberately avoid async — prefer async + `tokio::main` for consistency with ecosystem).
+- **JSON:** **serde** + **serde_json** (trees, commits, API bodies).
+- **YAML frontmatter (B1+):** **serde_yaml**.
+- **Crypto:** **sha2** + **hex** (object hashes).
+- **Errors:** **anyhow** at CLI boundary; **thiserror** for library error types.
+- **Config:** `STRATUM_BASE_URL`; token file under `~/.config/ics-cli/` with mode **0600** (use `std::fs::OpenOptions` + `libc`/`nix` chmod or write then `std::fs::set_permissions` where supported).
+
+**Distribution:** **crates.io** as **`ics-cli`** (package) installing binary **`ics`**; optional release artifacts via **GitHub Releases** (static musl builds later).
 
 ---
 
@@ -111,7 +119,7 @@ When Stratum’s vault APIs and semantics are stable enough for this tool:
 - **Placeholders:** None; milestone table is explicit.
 - **Consistency:** B then C; C uses real vault routes, not blueprint-only names.
 - **Scope:** Single CLI repo + Stratum as backend; federation excluded.
-- **Ambiguity:** B0 local store is fixed (**hybrid**: blobs on disk + SQLite for graph/refs). Conflict resolution policy for **B2** remains in the B2 implementation plan (explicit subcommands or flags).
+- **Ambiguity:** B0 local store is fixed (**hybrid**: blobs on disk + SQLite for graph/refs). Conflict resolution policy for **B2** remains in the B2 implementation plan (explicit subcommands or flags). Language for implementation is **Rust** (§5).
 
 ---
 
