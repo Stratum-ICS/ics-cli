@@ -1,0 +1,27 @@
+# fmt + clippy optional later; keep CI fast for PRs
+name: CI
+
+on:
+  push:
+    branches: [master, main, "feat/**"]
+  pull_request:
+    branches: [master, main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo test --locked --all-features
+
+  build-release-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --locked --release --all-features
+      - run: ./target/release/ics --help

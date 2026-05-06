@@ -2,6 +2,16 @@
 
 Local-markdown workspace + Stratum **ICS** (Incremental Consensus System) integration. This repository is the home for the **`ics` CLI**, implemented in **Rust** (Cargo package **`ics-cli`**); the running server and canonical ICS behavior live in **[Stratum](https://github.com/Stratum-ICS/Stratum)**.
 
+## Install
+
+| Method | When to use |
+|--------|-------------|
+| **[GitHub Releases](https://github.com/Stratum-ICS/ics-cli/releases)** | Download a **prebuilt** archive (`ics-*-x86_64-unknown-linux-gnu.tar.gz`, macOS `.tar.gz`, or Windows `.zip`) for your platform. Extract and put `ics` on your `PATH`. |
+| **Cargo from git** | `cargo install --locked --git https://github.com/Stratum-ICS/ics-cli --branch master` |
+| **Build from source** | Clone the repo, then `cargo build --release` → `target/release/ics` |
+
+Release binaries are built by [`.github/workflows/release.yml`](.github/workflows/release.yml) when you **publish** a [GitHub Release](https://github.com/Stratum-ICS/ics-cli/releases) for a tag.
+
 ## Docs
 
 | Document | Description |
