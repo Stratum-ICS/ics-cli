@@ -1,5 +1,6 @@
 //! Library crate for `ics` — local hybrid `.ics/` store.
 
+pub mod commands;
 pub mod paths;
 pub mod objects;
 pub mod store;
